@@ -26,7 +26,9 @@ class UserType extends AbstractType
                 'label' => 'Click here to indicate that you have read and agree to the terms presented in the Terms and Conditions agreement',
                 'help' => 'Your email and information are used to allow you to sign in securely and access your data. SensioTV records certain usage data for security, support and reporting purposes.'
             ])
-            ->add('submit', Type\SubmitType::class);
+            ->add('submit', Type\SubmitType::class, [
+                'label' => 'Create your SensioTV account',
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

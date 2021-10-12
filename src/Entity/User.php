@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Symfony\Component\Validator\Constraints as Assert;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -19,27 +21,41 @@ class User
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Assert\Length(min=2)
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
+     * @Assert\Length(min=2)
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Email(mode="html5")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(min=5)
      */
     private $password;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @Assert\IsTrue(message="Your password is invalid, please modify it")
+     */
+    public function isPasswordValid()
+    {
+        $res = strpos($this->password, $this->email);
+
+        return false === $res;
     }
 
     public function getFirstName(): ?string

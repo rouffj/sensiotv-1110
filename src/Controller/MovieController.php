@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Movie;
+use App\Repository\MovieRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,9 +19,13 @@ class MovieController extends AbstractController
     /**
      * @Route("/latest", name="latest")
      */
-    public function latest(): Response
+    public function latest(MovieRepository $movieRepository): Response
     {
-        return $this->render('movie/latest.html.twig');
+        $movies = $movieRepository->findBy([], ['id' => 'DESC']);
+
+        return $this->render('movie/latest.html.twig', [
+            'movies' => $movies,
+        ]);
     }
 
     /**
@@ -27,6 +34,21 @@ class MovieController extends AbstractController
     public function show($id): Response
     {
         return $this->render('movie/show.html.twig');
+    }
+
+    /**
+     * @Route("/{imdbId}/import", requirements={"id": "tt\d+"})
+     */
+    public function import($imdbId, EntityManagerInterface $entityManager, OmdbApi $omdbApi): Response
+    {
+        $movieData = $omdbApi->requestOneById($imdbId);
+
+        dump($movieData);
+        $movie = Movie::fromApi($movieData);
+        $entityManager->persist($movie);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('movie_latest');
     }
 
     /**

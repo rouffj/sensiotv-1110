@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,12 +14,15 @@ class UserController extends AbstractController
     /**
      * @Route("/register", name="register")
      */
-    public function register(Request $request): Response
+    public function register(Request $request, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(UserType::class);
 
         if ($form->handleRequest($request)->isSubmitted() && $form->isValid()) {
             $entity = $form->getData();
+            $entityManager->persist($entity);
+
+            $entityManager->flush();
             dump($entity);
             // TODO: Your entity is ready to be inserted into DB
         }
