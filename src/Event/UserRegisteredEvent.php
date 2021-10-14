@@ -1,4 +1,3 @@
-### src/Event/UserRegisteredEvent.php ###
 <?php
 
 namespace App\Event;
@@ -20,8 +19,3 @@ class UserRegisteredEvent extends Event
         return $this->user;
     }
 }
-
-### In your code ###
-<?php
-
-

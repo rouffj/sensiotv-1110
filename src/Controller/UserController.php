@@ -10,13 +10,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\UserType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use App\Event\UserRegisteredEvent;
 
 class UserController extends AbstractController
 {
     /**
      * @Route("/register", name="register")
      */
-    public function register(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    public function register(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, EventDispatcherInterface $eventDispatcher): Response
     {
         $form = $this->createForm(UserType::class);
 
@@ -30,19 +32,13 @@ class UserController extends AbstractController
 
             $entityManager->flush();
             dump($user);
+
+            $eventDispatcher->dispatch(new UserRegisteredEvent($user), 'user_registered');
             // TODO: Your entity is ready to be inserted into DB
         }
 
         return $this->render('user/register.html.twig', [
             'form' => $form->createView(),
         ]);
-    }
-
-    /**
-     * @Route("/login", name="login")
-     */
-    public function login(): Response
-    {
-        return $this->render('user/signin.html.twig');
     }
 }

@@ -1,6 +1,6 @@
 security:
     # https://symfony.com/doc/current/security/authenticator_manager.html
-    enable_authenticator_manager: true
+    enable_authenticator_manager: false
     # https://symfony.com/doc/current/security.html#c-hashing-passwords
     password_hashers:
         #Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
@@ -12,7 +12,6 @@ security:
         #my_chain:
         #    chain:
         #        providers: [ldap_provider, db_user_provider]
-
         db_user_provider:
             entity:
                 class: App\Entity\User
@@ -32,7 +31,15 @@ security:
             pattern: ^/
             lazy: true
             provider: db_user_provider
-
+            anonymous: ~
+            guard:
+                authenticators:
+                    - App\Security\FormLoginAuthenticator
+                entry_point: App\Security\FormLoginAuthenticator
+            logout:
+                path: app_logout
+                # where to redirect after logout
+                # target: app_any_route
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
 
@@ -42,5 +49,21 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/movie, roles: ROLE_USER }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/register, roles: IS_ANONYMOUS }
+        #- { path: ^/register, allow_if: 'is_anonymous()' }
+        #- { path: ^/, roles: ROLE_2FACTORS }
+        #- { path: ^/(login|signup|2factors), roles: IS_AUTHENTICATED_ANONYMOUSLY }
         # - { path: ^/profile, roles: ROLE_USER }
+
+    role_hierarchy:
+        ROLE_USER:
+            - ROLE_MOVIE_SHOW
+        ROLE_MODERATOR:
+            - ROLE_USER
+            - ROLE_MOVIE_EDIT
+            - ROLE_MOVIE_DELETE
+            - ROLE_MOVIE_IMPORT
+        ROLE_ADMIN:
+            - ROLE_MODERATOR

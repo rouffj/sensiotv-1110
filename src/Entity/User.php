@@ -189,6 +189,11 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->reviews;
     }
 
+    public function getBirthday(): \DateTime
+    {
+        return new \DateTime('2000-01-01');
+    }
+
     public function addReview(Review $review): self
     {
         if (!$this->reviews->contains($review)) {

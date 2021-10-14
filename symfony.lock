@@ -282,6 +282,9 @@
     "symfony/event-dispatcher-contracts": {
         "version": "v2.4.0"
     },
+    "symfony/expression-language": {
+        "version": "v5.3.7"
+    },
     "symfony/filesystem": {
         "version": "v5.3.4"
     },
@@ -333,9 +336,6 @@
     },
     "symfony/http-kernel": {
         "version": "v5.3.9"
-    },
-    "symfony/ldap": {
-        "version": "v5.3.8"
     },
     "symfony/maker-bundle": {
         "version": "1.0",

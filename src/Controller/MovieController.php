@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\OmdbApi;
 use App\Form\ReviewType;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * @Route("/movie", name="movie_")
@@ -24,6 +25,10 @@ class MovieController extends AbstractController
      */
     public function latest(MovieRepository $movieRepository): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            throw new AccessDeniedException('You should be logged in to access the "import" page');
+        }
+
         $movies = $movieRepository->findBy([], ['id' => 'DESC']);
 
         return $this->render('movie/latest.html.twig', [
@@ -39,6 +44,11 @@ class MovieController extends AbstractController
         $form = $this->createForm(ReviewType::class);
 
         $movie = $movieRepository->find($id);
+
+        if (!$this->isGranted('MOVIE_PLAY', $movie)) {
+            throw new AccessDeniedException();
+        }
+
         if ($form->handleRequest($request)->isSubmitted() && $form->isValid()) {
             $reviewData = $form->getData();
 
